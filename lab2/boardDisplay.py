@@ -7,9 +7,9 @@ You do NOT need to modify this file.
 
 import pygame
 
-from preferences import Preferences
-from gameData import GameData
-from cell import Cell
+from Lab3.preferences import Preferences
+from lab2.gameData import GameData
+from lab2.cell import Cell
 
 class BoardDisplay:
     def __init__(self):

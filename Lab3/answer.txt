@@ -1,0 +1,197 @@
+ENGR 221 - Homework 3: Sorting Algorithms
+Name: Adham Farag
+
+PART 1: Introduction to the assignment and code
+
+1.2a) How is a new array to be sorted created?
+A new array is created by the create_new_array() method in sorting_algorithms.py.
+It uses a list comprehension to build a list of random whole numbers between 0
+and Preferences.MAX_VAL. The list has 20 items by default (NUM_ELEMENTS), or a
+different length if one is passed in.
+
+1.2b) When is the new array created?
+It is created inside restart(), which controller.py calls every time the user
+presses S, I, or B (to pick an algorithm) or R (to reset the current one). Before
+any of those keys is pressed, self.array is just an empty list, so nothing is drawn.
+
+1.2c) What does the yield keyword do in selection_sort()?
+yield pauses the function and hands a value back to whatever asked for it (here,
+a pair of indices). The function does not end. It remembers where it stopped and
+keeps all of its variables (i, j, min_idx), and the next time a value is requested
+it continues from the line right after the yield. This lets us run the sort one
+step at a time instead of all at once.
+
+1.2d) Relationship between selection_sort() and get_next_step()?
+selection_sort() is a generator. restart() calls it and stores the resulting
+generator in self.alg_method. get_next_step() calls next() on that generator, which
+runs selection_sort() until its next yield and returns the yielded pair of indices,
+which get_next_step() saves as self.outer_idx and self.inner_idx. So each call to
+get_next_step() performs exactly one step of the sort. When the sort finishes,
+next() raises StopIteration, and get_next_step() resets both indices to -1.
+
+1.2e) What arguments does draw() take, and when are they updated?
+The handout says two arguments, but in display.py draw(self, array, outer_idx=-1,
+inner_idx=-1) takes three: the array to draw, and the two indices to highlight (the
+outer index is drawn blue and the inner index is drawn red). The indices are updated
+in get_next_step() each time the generator reaches a yield, and the array is changed
+directly by the sorting algorithm as it swaps items. After calling get_next_step(),
+controller.py immediately calls draw() with the current array and indices (on a
+right-arrow/L key press, or on every cycle when Space "continuous" mode is on), so
+the window always shows the most current step.
+
+
+PART 2: Analyze Selection Sort
+
+2.2a) High-level approach / why is it called selection sort?
+Selection sort repeatedly SELECTS the smallest item in the unsorted part of the list
+and swaps it into the next open position at the front. After the first pass the
+smallest item is first, after the second pass the second smallest is second, and so
+on until the whole list is sorted.
+
+2.2b) Time complexity and how to tell from the code
+O(n^2). selection_sort() has a for loop over i that runs n times, and inside it a
+for loop over j that scans the rest of the list (up to n items). Nested loops that
+each depend on n give about n + (n-1) + ... + 1 = n(n+1)/2 comparisons, which is
+O(n^2). This is true even if the list is already sorted, because it always scans the
+whole unsorted part.
+
+2.2c) Space complexity and how to tell from the code
+O(1). The code only swaps items inside the existing self.array and uses a few
+variables (n, i, j, min_idx). It never creates a new list, so the extra memory does
+not grow with the size of the input.
+
+
+PART 3: Analyze and Implement Insertion Sort
+
+3.1a) High-level approach / why is it called insertion sort?
+Insertion sort goes through the list one item at a time and INSERTS each item into
+its correct place among the items to its left, which are already sorted. It is like
+sorting a hand of playing cards: you pick up a card and slide it left until it sits
+in the right spot.
+
+3.1b) Time complexity and how to tell from the pseudocode
+O(n^2). The for loop runs n times, and the inner while loop can run up to i times
+for each item (worst case, a reverse-sorted list, where every item must move all the
+way to the front). A loop nested in a loop gives O(n^2). In the best case (already
+sorted) the while loop never runs, so it would be O(n), but Big O describes the
+worst case.
+
+3.1c) Space complexity and how to tell from the pseudocode
+O(1). It sorts in place by swapping neighbors and only needs the extra variables i
+and j, so no additional storage grows with the size of the list.
+
+
+PART 4: Analyze and Implement Bubble Sort
+
+4.1a) High-level approach / why is it called bubble sort?
+(The handout says "insertion sort" here, but it means bubble sort.) Bubble sort
+repeatedly walks through the list comparing each pair of neighbors and swapping them
+if they are out of order. On each pass the largest remaining item gets carried to
+the end, like a bubble rising to the top of water, which is where the name comes from.
+
+4.1b) Time complexity and how to tell from the pseudocode
+O(n^2). There is an outer loop that runs about n times and an inner loop that runs
+up to about n times for each of those, so the number of comparisons is about
+n^2 / 2, which is O(n^2).
+
+4.1c) Space complexity and how to tell from the pseudocode
+O(1). It swaps items in place and only uses the loop variables i and j, so no extra
+storage grows with the input size.
+
+4.2) Output of the pseudocode for A = [8, 1, 4, 2]  (7 print statements)
+
+  i    j    A[j]  A[j+1]   print(A)
+  N/A  N/A  N/A   N/A      [8, 1, 4, 2]
+  0    0    8     1        [1, 8, 4, 2]
+  0    1    8     4        [1, 4, 8, 2]
+  0    2    8     2        [1, 4, 2, 8]
+  1    0    1     4        [1, 4, 2, 8]
+  1    1    4     2        [1, 2, 4, 8]
+  2    0    1     2        [1, 2, 4, 8]
+
+(The table's A[i] and A[j] columns refer to the two items being compared. The
+inner loop compares A[j] and A[j+1].)
+
+4.3) Why can we use "length(A)-1-i" and still get the same output?
+Each pass of the outer loop carries the largest remaining item to the end of the
+unsorted part. After pass i, the last i+1 items are already the largest ones and
+sit in their final positions. Comparing items in that sorted tail can never cause a
+swap, because they are already in order and are all bigger than everything before
+them. So skipping them with "-i" gives exactly the same result with fewer
+comparisons.
+
+4.4) Using a generative AI tool to write bubble_sort()
+
+a) Tool: Claude 
+
+b) Prompt: "Write a bubble_sort function in Python that sorts a list in place."
+
+c) Output code:
+
+    def bubble_sort(arr):
+        n = len(arr)
+        for i in range(n):
+            swapped = False
+            for j in range(0, n - i - 1):
+                if arr[j] > arr[j + 1]:
+                    arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                    swapped = True
+            # If no swaps happened, the list is already sorted
+            if not swapped:
+                break
+        return arr
+
+d) Does it run in place?
+Yes. It swaps items directly inside the list that was passed in and never builds a
+new list. It does "return arr", but that is the same list object, not a copy.
+
+e) Similarities and differences compared to the pseudocode in 4.1:
+Similarities: it has the same two nested loops, compares neighbors arr[j] and
+arr[j+1], swaps them if they are out of order, and uses n - i - 1 as the inner loop
+bound, which is the same "-i" optimization from the pseudocode.
+Differences: the tool's version adds a "swapped" flag that stops the algorithm early
+if a full pass makes no swaps (the pseudocode always does every pass). The outer loop
+runs range(n) instead of length(A)-1 (one extra pass). It also has no print
+statements, and it returns the list.
+
+f) What I would do differently:
+I would keep the early-exit "swapped" flag because it makes the best case O(n), but I
+would make the outer loop range(n - 1) to match the pseudocode, since n - 1 passes are
+always enough. I would also remove "return arr" because the sort works in place, which
+avoids suggesting that a new list is created. For this lab I also changed the function
+into a generator that yields (outer, inner) at each comparison so the GUI could
+display the steps.
+
+==============================================================
+PART 5: Compare the Algorithms
+==============================================================
+
+(Times in seconds, measured using get_runtime() on a randomly generated list.
+Replace with your own machine's times if they are different.)
+
+5.3a) selection_sort():
+    100 items:    0.0003 seconds
+    1,000 items:  0.0300 seconds
+    10,000 items: 3.0125 seconds
+
+5.3b) insertion_sort():
+    100 items:    0.0003 seconds
+    1,000 items:  0.0350 seconds
+    10,000 items: 3.9732 seconds
+
+5.3c) bubble_sort():
+    100 items:    0.0006 seconds
+    1,000 items:  0.0659 seconds
+    10,000 items: 7.1227 seconds
+
+5.3d) Conclusions about Big O based on these runtimes:
+All three algorithms are O(n^2), and the data matches that: every time the list got
+10 times bigger, the runtime grew by about 100 times (for example, selection sort
+went from 0.03 s to about 3 s). So Big O correctly predicts how each algorithm
+scales as n grows. However, the three runtimes are not equal even though they share
+the same Big O. Bubble sort was about twice as slow as selection sort at 10,000 items,
+because Big O ignores constant factors such as how many comparisons and swaps are
+done per step. Bubble sort swaps neighbors very often, while selection sort makes
+at most one swap per pass. This shows that Big O tells us how an algorithm grows, but
+not exactly how fast it will run, so two algorithms with the same Big O can still
+differ in practice.

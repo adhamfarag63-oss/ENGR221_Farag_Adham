@@ -6,7 +6,7 @@ You do NOT need to modify this file.
 
 import pygame 
 
-from preferences import Preferences 
+from Lab3.preferences import Preferences 
 
 class Display:
     def __init__(self):

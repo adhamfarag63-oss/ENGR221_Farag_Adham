@@ -6,7 +6,7 @@ You do NOT need to modify this file.
 
 from enum import Enum 
 
-from preferences import Preferences
+from Lab3.preferences import Preferences
 
 class Cell:    
     def __init__(self, row, col):

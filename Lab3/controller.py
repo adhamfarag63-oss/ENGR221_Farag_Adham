@@ -6,9 +6,9 @@ You do NOT need to update this file.
 import pygame
 from enum import Enum 
 
-from display import Display
-from sorting_algorithms import SortingAlgorithms
-from preferences import Preferences
+from Lab3.display import Display
+from Lab3.sorting_algorithms import SortingAlgorithms
+from Lab3.preferences import Preferences
 
 class Controller:
     def __init__(self):

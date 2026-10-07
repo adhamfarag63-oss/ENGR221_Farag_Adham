@@ -6,8 +6,8 @@ Handles player movement, neighbor retrieval, food generation, and enemy mechanic
 """
 
 import random
-from preferences import Preferences
-from cell import Cell
+from Lab3.preferences import Preferences
+from lab2.cell import Cell
 
 class GameData:
     def __init__(self):

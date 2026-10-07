@@ -1,54 +1,48 @@
-""" 
-Author: Prof. Alyssa
-Controls the flow of the game, including key presses.
+""" Author: Prof. Alyssa
+Controls the flow of the program, including key presses.
 You do NOT need to update this file.
 """
 
 import pygame
-import random
-from enum import Enum
+from enum import Enum 
 
-from preferences import Preferences 
-from boardDisplay import BoardDisplay
-from gameData import GameData
-
+from display import Display
+from sorting_algorithms import SortingAlgorithms
+from preferences import Preferences
 
 class Controller:
     def __init__(self):
-        # The state of the current game
-        self.game_data = GameData()
-        # The visual board
-        self.display = BoardDisplay()
+        # The sorting algorithms
+        self.sorting_algorithms = SortingAlgorithms()
+        # The visual screen
+        self.display = Display()
         # How many cycles have passed
         self.__num_cycles = 0 
 
+        # Whether or not the user has quit out of the game
+        self.quit = False
+        # Whether or not to continuously advance
+        self.continuous = False
+
     def run(self) -> None:
-        """ The main loop of the game """
+        """ The main loop """
 
         # Draw the initial state of the board
-        self.display.draw_board(self.game_data)
+        self.display.draw(self.sorting_algorithms.array)
 
         # Keep track of the time that's passed 
         clock = pygame.time.Clock()
 
-        # Loop until we get a game over 
-        while not self.game_data.gameover:
+        # Loop until we quit
+        while not self.quit:
             # Run the main behavior
             self.cycle()
             # Sleep
             clock.tick(Preferences.SLEEP_TIME)
 
-        # Loop to allow the player time to read the gameover screen and exit
-        key_pressed = False
-        while not key_pressed:
-            for event in pygame.event.get():
-                if event.type in [pygame.QUIT, pygame.KEYDOWN]:
-                    key_pressed = True
-            clock.tick(Preferences.SLEEP_TIME)
-
     def cycle(self) -> None:
         """ The main behavior to execute at each time step.
-            Only update the board when the player moves. """
+            Only update when the user indicates to do so. """
         
         # Flag to check whether the player has moved
         key_pressed = False
@@ -57,65 +51,58 @@ class Controller:
         for event in pygame.event.get():
             # Quit the game
             if event.type == pygame.QUIT:
-                self.set_game_over()
-            # Change the direction based on the keypress
+                self.quit = True
+            # Advance to the next step based on the keypress
             elif event.type == pygame.KEYDOWN:
-                key_pressed = True
-                # Change directions
-                if event.key in self.Keypress.LEFT.value:
-                    self.game_data.move_player_left()
-                elif event.key in self.Keypress.RIGHT.value:
-                    self.game_data.move_player_right()
-                elif event.key in self.Keypress.UP.value:
-                    self.game_data.move_player_up()
-                elif event.key in self.Keypress.DOWN.value:
-                    self.game_data.move_player_down()
-                # If we got here, the keypress was not a valid
-                # direction, so change the flag back
+                key_pressed = True 
+                # Advance one step
+                if self.sorting_algorithms.current_alg and event.key in self.Keypress.NEXT.value:
+                    self.sorting_algorithms.get_next_step()
+                    self.display.draw(self.sorting_algorithms.array, 
+                                      self.sorting_algorithms.outer_idx,
+                                      self.sorting_algorithms.inner_idx)
+                    self.continuous = False 
+                # Toggle continue advancing
+                elif self.sorting_algorithms.current_alg and event.key in self.Keypress.CONT.value:
+                    self.continuous = not self.continuous
+                # Switch to Insertion Sort
+                elif event.key == pygame.K_i:
+                    self.sorting_algorithms.restart("insertion")
+                # Switch to Selection Sort
+                elif event.key == pygame.K_s:
+                    self.sorting_algorithms.restart("selection")
+                # Switch to Bubble Sort
+                elif event.key == pygame.K_b:
+                    self.sorting_algorithms.restart("bubble")
+                # Reset with the current algorithm
+                elif self.sorting_algorithms.current_alg and event.key == pygame.K_r:
+                    self.sorting_algorithms.restart(self.sorting_algorithms.current_alg)
+                # If we got here, the keypress was not valid,
+                # so change the flag back
                 else:
                     key_pressed = False
 
-        # If we moved, advance the game
+        # Advance to the next step even if there was no key pressed
+        if self.continuous:
+            self.sorting_algorithms.get_next_step()
+            self.display.draw(self.sorting_algorithms.array, 
+                                      self.sorting_algorithms.outer_idx,
+                                      self.sorting_algorithms.inner_idx)
+
+        # Update the screen to reflect any new input
         if key_pressed:
-            # Update the food
-            self.update_food()
-            # Update the enemies
-            self.update_enemies()
-            # Increment the number of cycles 
-            self.__num_cycles += 1
-            # Update the screen
-            self.display.draw_board(self.game_data)
-
-    def update_food(self) -> None:
-        """ Add food every FOOD_ADD_RATE cycles """
-        if not self.game_data.food or \
-                (self.__num_cycles % Preferences.FOOD_ADD_RATE == 0 and \
-                not self.game_data.at_max_food()):
-            self.game_data.add_food()
-
-    def update_enemies(self) -> None:
-        """ Move the enemies and add a new one if applicable """
-
-        # Randomly choose a direction for the enemy to move
-        for i in range(len(self.game_data.enemies)):
-            {
-                'left' : self.game_data.move_enemy_left,
-                'right' : self.game_data.move_enemy_right,
-                'up' : self.game_data.move_enemy_up,
-                'down' : self.game_data.move_enemy_down
-            }[random.choice(['left', 'right', 'up', 'down'])](i)
+            self.display.draw(self.sorting_algorithms.array, 
+                                      self.sorting_algorithms.outer_idx,
+                                      self.sorting_algorithms.inner_idx)
             
-        # Add an enemy if there is space
-        if self.__num_cycles % Preferences.ENEMY_ADD_RATE == 0 and \
-                not self.game_data.at_max_enemies():
-            self.game_data.add_enemy()
+        # Increment the number of cycles 
+        self.__num_cycles += 1
+
 
     class Keypress(Enum):
         """ Define the keyboard inputs """
-        UP = pygame.K_i, pygame.K_UP       # i and up arrow key
-        DOWN = pygame.K_k, pygame.K_DOWN   # k and down arrow key
-        LEFT = pygame.K_j, pygame.K_LEFT   # j and left arrow key
-        RIGHT = pygame.K_l, pygame.K_RIGHT # l and right arrow key
+        NEXT = pygame.K_l, pygame.K_RIGHT  # l and right arrow key
+        CONT = pygame.K_SPACE,              # space key
 
 if __name__ == "__main__":
     Controller().run()

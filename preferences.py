@@ -5,67 +5,50 @@ You do NOT need to modify this file.
 """
 
 import pygame
-import os 
+import os
 
 class Preferences:
-    """ Defines values for constant variables.
+    """ Defines values for constant values.
         This is good practice to avoid "magic numbers" """
     
     pygame.init()
-    
+
     ########
     # TEXT #
     ########
 
-    SCORE_FONT_SIZE = 25
-    SCORE_FONT = pygame.font.SysFont(None, SCORE_FONT_SIZE)
-    SCORE_FONT_COLOR = pygame.Color('black')
-    SCORE_TEXT = "Fish eaten: {}"
-
-    GAMEOVER_FONT_SIZE = 50
-    GAMEOVER_FONT = pygame.font.SysFont(None, GAMEOVER_FONT_SIZE)
-    GAMEOVER_FONT_COLOR = pygame.Color('red')
-    GAMEOVER_TEXT = "You were eaten by a seal!\nPress any key to exit."
-
+    FONT_SIZE = 28
+    FONT = pygame.font.SysFont(None, FONT_SIZE)
+    FONT_COLOR = pygame.Color('black')
 
     ##########
     # SIZING #
     ##########
 
-    CELL_WIDTH = 50           # In pixels
-    CELL_HEIGHT = CELL_WIDTH  # In pixels
+    NUM_ELEMENTS = 20 # Number of bars
+    BAR_WIDTH = 30    # Width of bars in pixels
+    UNIT_HEIGHT = 10  # Height of "1" unit in pixels
 
-    NUM_ROWS = 10   # Number of rows in the board
-    NUM_COLS = 10   # Number of columns in the board
+    WIDTH = BAR_WIDTH * NUM_ELEMENTS  # Width of the window 
+    HEIGHT = 500 # Height of the window
 
-    # Total number of cells on the board
-    NUM_CELLS = NUM_ROWS * NUM_COLS  
+    MAX_VAL = (HEIGHT - 100) // UNIT_HEIGHT
 
-    # Calculate board size
-    BOARD_WIDTH = CELL_WIDTH * NUM_COLS
-    BOARD_HEIGHT = CELL_HEIGHT * NUM_ROWS + SCORE_FONT_SIZE
+    ##########
+    # COLORS #
+    ##########
 
-
-    ###############
-    # CELL COLORS #
-    ###############
-
-    COLOR_BACKGROUND = pygame.Color('white')
-    COLOR_PLAYER = pygame.Color('blue')
-    COLOR_FOOD = pygame.Color('green')
-    COLOR_ENEMY = pygame.Color('red')
-    
+    BACKGROUND_COLOR = pygame.Color('white')
+    BAR_COLOR = pygame.Color('gray')
+    BAR_INNER_COLOR = pygame.Color('red')
+    BAR_OUTER_COLOR = pygame.Color('blue')
 
     ##########
     # TIMING #
     ##########
-
+    
     # How long to sleep between updates (ms)
     SLEEP_TIME = 50
-    # How frequently to add food to the board (cycles)
-    FOOD_ADD_RATE = 10
-    # How frequently to add enemies to the board (cycles)
-    ENEMY_ADD_RATE = 50
 
 
     ############
@@ -74,22 +57,10 @@ class Preferences:
 
     # Directory containing the images
     IMG_DIR = os.path.join(os.path.dirname(
-                            os.path.realpath(__file__)), 
-                            'images')
+                            os.path.realpath(__file__)),
+                            "images")
 
     # Image to display as the player
-    PLAYER_IMAGE = os.path.join(IMG_DIR, "penguin.png")
-    # Image to display as food
-    FOOD_IMAGE = os.path.join(IMG_DIR, "fish.png")
-    # Image to display as an enemy
-    ENEMY_IMAGE = os.path.join(IMG_DIR, 'seal.png')
-
-
-    #######################
-    # CELL CONFIGURATIONS #
-    #######################
-
-    # Only allow 20% of the board to be food at once
-    MAX_FOOD = NUM_CELLS // 5 
-    # Only allow 5% of the board to be enemies at once
-    MAX_ENEMIES = NUM_CELLS // 20
+    BAR_IMAGE = os.path.join(IMG_DIR, "carrot.png")
+    BAR_INNER_IMAGE = os.path.join(IMG_DIR, "carrot_inner.png")
+    BAR_OUTER_IMAGE = os.path.join(IMG_DIR, "carrot_outer.png")

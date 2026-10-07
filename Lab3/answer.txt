@@ -162,36 +162,31 @@ avoids suggesting that a new list is created. For this lab I also changed the fu
 into a generator that yields (outer, inner) at each comparison so the GUI could
 display the steps.
 
-==============================================================
-PART 5: Compare the Algorithms
-==============================================================
 
-(Times in seconds, measured using get_runtime() on a randomly generated list.
-Replace with your own machine's times if they are different.)
+PART 5: Compare the Algorithms
 
 5.3a) selection_sort():
-    100 items:    0.0003 seconds
-    1,000 items:  0.0300 seconds
-    10,000 items: 3.0125 seconds
+    100 items:    0.0006 seconds
+    1,000 items:  0.0637 seconds
+    10,000 items: 6.3891 seconds
 
 5.3b) insertion_sort():
-    100 items:    0.0003 seconds
-    1,000 items:  0.0350 seconds
-    10,000 items: 3.9732 seconds
+    100 items:    0.0008 seconds
+    1,000 items:  0.0932 seconds
+    10,000 items: 8.9234 seconds
 
 5.3c) bubble_sort():
-    100 items:    0.0006 seconds
-    1,000 items:  0.0659 seconds
-    10,000 items: 7.1227 seconds
+    100 items:    0.0012 seconds
+    1,000 items:  0.1258 seconds
+    10,000 items: ____ seconds
 
 5.3d) Conclusions about Big O based on these runtimes:
-All three algorithms are O(n^2), and the data matches that: every time the list got
-10 times bigger, the runtime grew by about 100 times (for example, selection sort
-went from 0.03 s to about 3 s). So Big O correctly predicts how each algorithm
-scales as n grows. However, the three runtimes are not equal even though they share
-the same Big O. Bubble sort was about twice as slow as selection sort at 10,000 items,
-because Big O ignores constant factors such as how many comparisons and swaps are
-done per step. Bubble sort swaps neighbors very often, while selection sort makes
-at most one swap per pass. This shows that Big O tells us how an algorithm grows, but
-not exactly how fast it will run, so two algorithms with the same Big O can still
-differ in practice.
+All three algorithms are O(n^2), and my runtimes match that. Every time the list got
+10 times bigger, the runtime grew by about 100 times (for example, selection sort went
+from 0.0637 s at 1,000 items to 6.3891 s at 10,000 items). So Big O correctly predicts how each
+algorithm scales as n grows. However, the three runtimes are not equal even though they share the
+same Big O. Selection sort was the fastest, insertion sort was slower, and bubble sort was
+the slowest. Big O ignores constant factors, such as how many comparisons and swaps each
+algorithm does per step. Bubble sort swaps neighbors very often, while selection sort makes at
+most one swap per pass. This shows that Big O tells us how an algorithm grows, but not exactly how
+fast it runs, so two algorithms with the same Big O can still differ in practice.

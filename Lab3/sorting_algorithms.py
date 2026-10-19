@@ -59,6 +59,8 @@ class SortingAlgorithms:
         self.outer_idx, self.inner_idx = -1, -1
 
     def selection_sort(self):
+        "pick smallest -> swap with first unsorted -> repeat"
+"
         """ An implementation of the Selection sorth algorithm. 
             A generator function which creates an iterator that 
             iterates through each "yielded" value. """
@@ -90,6 +92,8 @@ class SortingAlgorithms:
                 
 
     def insertion_sort(self):
+        "take item -> slide left into place"
+        
         """ An implementation of the Insertion sort algorithm. 
             Sorts self.array in place. A generator function which 
             yields the indices to highlight at each step. """
@@ -113,6 +117,8 @@ class SortingAlgorithms:
 
 
     def bubble_sort(self):
+        "swap out of order neighbors -> biggest bubbles to the end"
+        
         """ An implementation of the Bubble sort algorithm. 
             Sorts self.array in place. A generator function which 
             yields the indices to highlight at each step. """

@@ -1,0 +1,14 @@
+1.2.a: How do we access values from the Preferences file?
+We access values using the Preferences class import or alias (e.g., Preferences.NUM_ROWS or Preferences.CELL_TYPE_EMPTY).
+
+1.2.b: What type is self.board?
+self.board is a 2D list (a list of lists containing Cell objects).
+
+1.2.c: What type is each element of self.board?
+Each element of self.board is a Cell object (defined in cell.py).
+
+1.2.d: How do we access a cell on the board?
+We access a cell using row and column indices: self.board[row][col].
+
+1.2.e: How do we change the type of a cell?
+We change the type by modifying its cell_type attribute, for example: cell.cell_type = Preferences.CELL_TYPE_FOOD.

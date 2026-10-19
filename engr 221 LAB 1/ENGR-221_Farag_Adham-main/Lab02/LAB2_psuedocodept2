@@ -1,0 +1,45 @@
+2.1 NEIGHBOR RETRIEVAL PSEUDOCODE:
+FUNCTION get_west_neighbor(cell):
+    IF cell.col > 0 THEN
+        RETURN board[cell.row][cell.col - 1]
+    RETURN None
+
+2.2 PLAYER MOVEMENT PSEUDOCODE:
+FUNCTION move_player_left():
+    target = get_west_neighbor(player_cell)
+    IF target is NOT None:
+        IF target is ENEMY THEN trigger game_over
+        IF target is FOOD THEN call eat_food(target)
+        clear old player_cell type to EMPTY
+        set target cell type to PLAYER
+        increment steps by 1
+        IF steps MOD 10 == 0 THEN add_food()
+        IF steps MOD 50 == 0 THEN add_enemy()
+
+2.3 FOOD METHODS PSEUDOCODE:
+FUNCTION add_food():
+    find all cells in board where cell_type is EMPTY
+    IF empty cells exist:
+        pick random cell from empty cells
+        set cell type to FOOD
+        add cell to food_cells list
+
+FUNCTION eat_food(target_cell):
+    remove target_cell from food_cells list
+    set target_cell type to EMPTY
+    increment score by 1
+
+2.4 ENEMY MECHANICS PSEUDOCODE:
+FUNCTION add_enemy():
+    target_cell = board[NUM_ROWS - 1][NUM_COLS - 1]
+    IF target_cell is player_cell THEN trigger game_over
+    IF target_cell in food_cells THEN remove from food_cells
+    set target_cell type to ENEMY
+    add target_cell to enemies list
+
+FUNCTION move_enemy_to_cell(idx, target_cell):
+    IF target_cell is player_cell THEN trigger game_over
+    set current enemy cell type to EMPTY
+    IF target_cell in food_cells THEN remove from food_cells
+    set target_cell type to ENEMY
+    update enemies[idx] to target_cell

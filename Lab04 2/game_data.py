@@ -1,5 +1,5 @@
 """
-Author: YOUR NAME HERE
+Author: Adham Farag
 Last updated: October 16, 2026
 Description: Stores and updates all of the data for the Duck Collector game
 (the board, the player's body, the food, and the score). Includes the logic

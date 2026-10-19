@@ -1,0 +1,32 @@
+ENGR 221 - Homework 4: Pseudocode
+Name: YOUR NAME HERE
+
+==================================================
+move_player_to_cell(cell)
+==================================================
+
+if cell is off the map (None) or cell is part of the body:
+    set game over
+else if cell is food:
+    # The player moves forward and the tail stays, so the body grows
+    make the current head (player) a body cell
+    make the food cell the new player cell
+    insert the food cell at the front of the body list (it is the new head)
+    remove the food cell from the food list
+    increase the score by 1
+else:   # cell is empty
+    # The player moves forward and the tail is released
+    make the current head (player) a body cell
+    remove the tail from the end of the body list
+    make the old tail cell empty
+    make the new cell the player cell
+    insert the new cell at the front of the body list (it is the new head)
+
+==================================================
+get_first_cell_in_path(cell)      # cell is the food that was found
+==================================================
+
+current = cell
+while the search parent of current is not the player:
+    current = the search parent of current
+return current      # the cell right next to the player on the path

@@ -1,0 +1,88 @@
+ENGR 221 - Homework 4: Searching Algorithms
+Name: YOUR NAME HERE
+
+==================================================
+PART 1: Introduction to the code
+==================================================
+
+1.2.a  How is the player's location on the board represented?
+   The player is stored in the list self.body, a list of Cell objects. The
+   first element (index 0) is the head of the player, which is the cell whose
+   type is PLAYER (the horse). Every other element is a BODY cell (a collected
+   duck), ordered from the neck back to the tail. At the start of the game the
+   list holds one cell, the top-left cell (0, 0). The board itself is a 2D
+   list of Cells, and each Cell tracks its own type (PLAYER/BODY/FOOD/EMPTY).
+
+1.2.b  What method(s) are given to help access different parts of the
+       player's "body"?
+   get_player() returns the head of the body (self.body[0]), and get_tail()
+   returns the last cell of the body (self.body[-1]).
+
+1.2.c  What are the different movement modes of the player, and what do they
+       mean in terms of how the player moves each turn?
+   The MoveMode enum has five modes:
+   - GOING_NORTH, GOING_SOUTH, GOING_EAST, GOING_WEST: each turn the player
+     moves one cell in that direction, and keeps going in that direction until
+     a key press changes the mode (the game starts in GOING_EAST).
+   - AI_MODE: the player does not use a fixed direction. Each turn it asks
+     get_next_cell_ai() to run a search for the next cell to step to.
+
+1.2.d  What is the current behavior of get_next_cell()? get_next_cell_ai()?
+   get_next_cell() returns the neighbor of the head in the current direction
+   (north, south, east, or west), or None if that direction runs off the board
+   (which causes a game over).
+   In the starter code, get_next_cell_ai() just clears the search info and
+   returns a random neighbor of the head, so the player wanders randomly in AI
+   mode. (After Part 2.3 it instead searches for the closest duck.)
+
+==================================================
+PART 2: Stacks and Queues
+==================================================
+
+2.2.1.a  When you add an item to a stack, where should it be added?
+   End.
+
+2.2.1.b  When you remove an item from a stack, which item should be removed?
+   End (the most recently added item, since a stack is first in, last out).
+
+2.2.1.c  When you add an item to a queue, where should it be added?
+   End.
+
+2.2.1.d  When you remove an item from a queue, which item should be removed?
+   Beginning (the oldest item, since a queue is first in, first out).
+
+==================================================
+PART 3: Compare BFS and DFS
+==================================================
+
+3.2.a  What happens when you run AI mode with DFS? Explain why the player
+       behaves in this way.
+   With DFS the player behaves badly. It often paces back and forth between
+   two cells (for example (0,0) and (0,1)) without ever reaching a duck, and
+   when it does reach one it takes long, winding routes that wander far from
+   the duck.
+
+   Why: DFS follows one branch as far as it can before trying any other, and
+   it has no sense of which direction is "toward" the food. The stack pops the
+   most recently added neighbor first, so the search always prefers one
+   direction (west, then east, then south, then north given the N,S,E,W order
+   neighbors are added). It sweeps across the board in long snaking paths and
+   only stops when it happens to hit a duck, so the path it finds is usually
+   far longer than necessary (e.g. a duck 6 steps away was reached by a
+   38-step path in my test). On top of that, the AI re-runs the search from
+   scratch every turn, and the path's first step depends on the player's
+   current cell. The preferred first step from one cell can point back to the
+   previous cell, so the player flips back and forth between the same two
+   cells forever. When it does move along a long path, it also makes the body
+   wrap around the board and makes it easy to trap itself.
+
+3.2.b  Will DFS or BFS find a shorter path to a food? Why?
+   BFS. BFS uses a queue, so it explores cells in order of their distance from
+   the player: every cell 1 step away, then every cell 2 steps away, and so
+   on. The first food it dequeues is therefore guaranteed to be a closest food
+   by number of steps, so the path found is a shortest path (all moves cost
+   the same). DFS has no such guarantee: it dives down one branch and returns
+   the first food it stumbles upon, which can be arbitrarily far away along a
+   very long path. (In my test, with a duck at (3,3), BFS found a 6-step path
+   while DFS found a 38-step path. Over 10 simulated games BFS averaged about
+   12 moves per duck and DFS about 49, when it collected any ducks at all.)

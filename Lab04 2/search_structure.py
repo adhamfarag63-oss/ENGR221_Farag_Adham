@@ -1,5 +1,5 @@
 """
-Author: YOUR NAME HERE
+Author: Adham Farag
 Last updated: October 16, 2026
 Description: Custom Stack and Queue classes used by the Duck Collector AI.
 Both classes expose the same three methods (add, remove, is_empty) so that

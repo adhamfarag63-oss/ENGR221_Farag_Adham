@@ -1,0 +1,84 @@
+HOMEWORK 5: RECURSION - PSEUDOCODE
+Name: Adham Farag
+
+=====================================================================
+2.1  draw_curve_recursive_helper(length, depth)
+=====================================================================
+Idea: A Koch curve of depth d is four Koch curves of depth d-1 and
+one-third the length, joined by turns that make a pointed "bump" (the
+middle third of the line is replaced by two sides of an outward-pointing
+triangle).
+
+FUNCTION draw_curve_recursive_helper(length, depth):
+
+    IF depth < 0:
+        raise an error ("Depth cannot be negative")
+
+    ELSE IF depth == 0:                      # BASE CASE
+        move the turtle forward by length    # the ONLY place we draw
+
+    ELSE:                                    # RECURSIVE CASE
+        new_length = length / 3
+        new_depth  = depth - 1
+
+        draw_curve_recursive_helper(new_length, new_depth)   # 1st third
+        turn the turtle RIGHT 60 degrees                     # start of bump
+        draw_curve_recursive_helper(new_length, new_depth)   # up side of bump
+        turn the turtle LEFT 120 degrees                     # point of bump
+        draw_curve_recursive_helper(new_length, new_depth)   # down side of bump
+        turn the turtle RIGHT 60 degrees                     # back to original heading
+        draw_curve_recursive_helper(new_length, new_depth)   # last third
+
+Check (depth 1, heading 0): forward, right 60, forward, left 120,
+forward, right 60, forward. Net turning = 0, so the turtle ends facing
+the way it started, and the curve is 4 segments of length/3.
+
+
+=====================================================================
+3.1  draw_curve_stack()   (non-recursive, uses a stack)
+=====================================================================
+Idea: The stack replaces the recursion's call stack. It holds commands
+that still have to run. Because a stack is LIFO, the commands for an
+expanded curve are PUSHED IN REVERSE of the order they should run.
+
+Commands (tuples):
+    ("add_curve", length, depth)   draw a curve
+    ("turn_left",  angle)          turn left by angle
+    ("turn_right", angle)          turn right by angle
+
+FUNCTION draw_curve_stack():
+
+    commands = stack containing [("add_curve", init_length, init_depth)]
+
+    WHILE commands is not empty:
+        command = pop the top of commands
+
+        IF command is "add_curve":
+            (length, depth) = the command's values
+
+            IF depth == 0:                              # BASE CASE
+                move the turtle forward by length
+
+            ELSE:                                       # "RECURSIVE" CASE
+                new_length = length / 3
+                new_depth  = depth - 1
+
+                # Push in REVERSE order (last thing to run is pushed first)
+                push ("add_curve", new_length, new_depth)   # runs LAST
+                push ("turn_right", 60)
+                push ("add_curve", new_length, new_depth)
+                push ("turn_left", 120)
+                push ("add_curve", new_length, new_depth)
+                push ("turn_right", 60)
+                push ("add_curve", new_length, new_depth)   # on top: runs FIRST
+
+        ELSE IF command is "turn_left":
+            turn the turtle left by the command's angle
+
+        ELSE IF command is "turn_right":
+            turn the turtle right by the command's angle
+
+Resulting run order of the 7 pushed commands (top of stack first):
+    add_curve, turn_right 60, add_curve, turn_left 120,
+    add_curve, turn_right 60, add_curve
+which matches the recursive version exactly.

@@ -1,0 +1,75 @@
+ENGR 221 - Homework 5: Recursion
+Name: Adham Farag
+
+=====================================================================
+PART 1
+=====================================================================
+
+1.1.a  How do draw_snowflake_recursive() and draw_snowflake_stack() draw a
+       full snowflake?
+
+Both functions first call init_turtle() to create the turtle and move it to
+the starting point (-200, -200). Then they loop 3 times. Each pass draws ONE
+side of the snowflake with a curve method (draw_curve_recursive() or
+draw_curve_stack()) and then turns the turtle left 120 degrees. Three sides
+joined by 120-degree turns form the equilateral triangle, and since each side
+is drawn as a Koch curve, the result is the full snowflake. Finally,
+turtle.clearscreen() clears the window. The only difference between the two
+functions is which curve method they call.
+
+1.1.b  How many "sides" does each initial call of draw_curve_recursive() and
+       draw_curve_stack() draw?
+
+Each initial call draws exactly ONE side of the snowflake (one-third of the
+whole shape). At depth d, that one side is made of 4^d small straight
+segments (so depth 0 is 1 straight line, depth 1 is 4 segments, depth 2 is 16
+segments, and so on). The full snowflake therefore has 3 * 4^d segments.
+
+1.1.c  How does get_time_and_mem() find the total time a method takes to run?
+
+It records the clock with time.perf_counter() right before running the
+function, runs the function through memory_usage() (which also tracks memory
+while it runs), and records time.perf_counter() again right after. The total
+time is the end time minus the start time. (Memory used is found separately,
+as the max minus the min of the memory readings that memory_usage() sampled.)
+
+=====================================================================
+PART 4
+=====================================================================
+
+4.1.a  What was the memory and time taken by each of the methods?
+
+Measured with the turtle window disabled (depth 7), so these reflect the
+algorithms themselves rather than the screen drawing.
+
+   Recursive memory usage:      18.953125 MB
+   Non-recursive memory usage:  18.953125 MB
+
+   Recursive time taken:        0.64684 s
+   Non-recursive time taken:    0.29082 s
+
+4.1.b  Explain why these results align with what the methods are doing
+       "under the hood".
+
+Both methods draw exactly the same snowflake, with the same forward() calls
+and turns. What differs is how each one tracks the work still to be done. The
+recursive method relies on Python's call stack: every call creates a new stack
+frame (holding length, depth, self, and a return address), and each frame stays
+open until its four sub-calls finish. The non-recursive method does the same
+bookkeeping in one loop with a list of small tuples.
+
+For memory, the two results are nearly identical (18.95 MB). This
+fits what is happening under the hood: at depth 7 the recursion is only ever
+about 8 frames deep, and the stack list only ever holds about 6 * depth + 1
+commands, so both grow in proportion to the depth and stay tiny. The
+0.4 MB difference is within the noise of memory_profiler, which only measures
+in MB.
+
+For time, the non-recursive method was about twice as fast (0.30 s vs. 0.64 s).
+The likely reason is that the recursive method pays for a Python function call
+for every one of its thousands of calls (setting up and tearing down a frame
+each time), while the stack method just pushes and pops tuples inside a single
+loop. Part of the gap may also be that the recursive method ran first, so it
+carried one-time startup costs. The explicit stack's bigger advantage is that
+it is not limited by Python's recursion limit, so it can handle much deeper
+snowflakes.

@@ -42,34 +42,26 @@ PART 4
 Measured with the turtle window disabled (depth 7), so these reflect the
 algorithms themselves rather than the screen drawing.
 
-   Recursive memory usage:      18.953125 MB
-   Non-recursive memory usage:  18.953125 MB
+   Recursive memory usage:      153.5625 MB
+   Non-recursive memory usage:  52.9375 MB
 
-   Recursive time taken:        0.64684 s
-   Non-recursive time taken:    0.29082 s
+   Recursive time taken:        14.39831 s
+   Non-recursive time taken:    14.42534 s
 
 4.1.b  Explain why these results align with what the methods are doing
        "under the hood".
 
-Both methods draw exactly the same snowflake, with the same forward() calls
-and turns. What differs is how each one tracks the work still to be done. The
-recursive method relies on Python's call stack: every call creates a new stack
-frame (holding length, depth, self, and a return address), and each frame stays
-open until its four sub-calls finish. The non-recursive method does the same
-bookkeeping in one loop with a list of small tuples.
+Both methods draw exactly the same snowflake, with the same forward() calls and
+turns, so the drawing itself costs the same for each. That is why the times are
+almost identical (14.40 s vs. 14.43 s): almost all of the time is spent animating
+the turtle, and the difference of about 0.03 s is just measurement noise.
 
-For memory, the two results are nearly identical (18.95 MB). This
-fits what is happening under the hood: at depth 7 the recursion is only ever
-about 8 frames deep, and the stack list only ever holds about 6 * depth + 1
-commands, so both grow in proportion to the depth and stay tiny. The
-0.4 MB difference is within the noise of memory_profiler, which only measures
-in MB.
-
-For time, the non-recursive method was about twice as fast (0.30 s vs. 0.64 s).
-The likely reason is that the recursive method pays for a Python function call
-for every one of its thousands of calls (setting up and tearing down a frame
-each time), while the stack method just pushes and pops tuples inside a single
-loop. Part of the gap may also be that the recursive method ran first, so it
-carried one-time startup costs. The explicit stack's bigger advantage is that
-it is not limited by Python's recursion limit, so it can handle much deeper
-snowflakes.
+The memory results differ more: the recursive method used about 153.6 MB and the
+non-recursive method about 52.9 MB. This fits what each method does under the
+hood. The recursive method uses Python's call stack, where every call creates a
+new stack frame (holding length, depth, self, and a return address) that stays
+alive until its four sub-calls finish. The non-recursive method does the same
+bookkeeping with a list of small tuples inside one loop, which takes less memory
+than full function frames. Some of the recursive method's extra memory may also
+come from one-time setup costs (such as opening the turtle window), since it was
+measured first.

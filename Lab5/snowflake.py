@@ -191,5 +191,5 @@ class KochSnowflake:
 
 if __name__ == "__main__":
     s = KochSnowflake(500, 3)
-    s.draw_snowflake_stack()
+    s.compare_snowflake()
 
